@@ -119,6 +119,8 @@ public class RunController : MonoBehaviour
 			roll = false;
 		}
 
+		if(observedSaw != null) ObserveSawDistance();
+
 		if (!jump) jump = jumpTriggered;
 		if (!roll && rollDuration <= 0) roll = rollTriggered;
 		if (!roll) roll = holdRoll;
@@ -255,8 +257,6 @@ public class RunController : MonoBehaviour
 		{
 			if (col.gameObject.CompareTag("Jump"))
 			{
-				Debug.Log("On est dans un jump bitch " + col.gameObject.transform.position.y);
-
 				jumpTriggered = true;
 				Debug.Log("Jump! " + col.gameObject.transform.position.y + jumpTriggered);
 				enteredActionTrigger = true;
@@ -271,41 +271,7 @@ public class RunController : MonoBehaviour
 			{
 				Debug.Log("On est dans le vertical saw");
 
-
-				float distanceX = col.gameObject.transform.position.x - gameObject.transform.position.x;
-				float distanceY = col.gameObject.transform.position.y - gameObject.transform.position.y;
-
-				if (distanceX + distanceY < 1.36f && distanceX < 1f) {
-					Debug.Log("Ca roule ma poule");
-					rollTriggered = true;
-					col.gameObject.SetActive(false);
-				}
-
-				//Useless condition check?
-				/*if (col.gameObject.GetComponent<SawTriggers>().verticalSaw)
-				{
-					//This was 1.3f before, then 1.35. 1.25 is great, maybe decouple 1.2 in another trigger
-					if (col.gameObject.transform.position.y > 1.2f)
-					{
-						Debug.LogWarning("OUI");
-						jumpTriggered = true;
-						col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
-					}
-				}*/
-
-				//if (col.gameObject.GetComponent<SawTriggers>()) col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
-				
-				//This was 1.5f before, then 1.4.    1.3 allowed for a death???
-				/*if (col.gameObject.transform.position.y > 1.35f
-					|| (col.gameObject.transform.position.y > 1.21f && distanceX < 0.64f))
-				{
-					rollTriggered = true;
-					col.gameObject.SetActive(false);
-					//else jump?
-				}*/
-
-				Debug.Log("Distance X " + (distanceX));
-				Debug.Log("Distance Y " + (distanceY));
+				observedSaw = col.gameObject;
 			}
 
 
@@ -321,8 +287,44 @@ public class RunController : MonoBehaviour
 	{
 		if (col.gameObject.CompareTag("Jump") || col.gameObject.CompareTag("Roll")) enteredActionTrigger = false;
 		else if (col.gameObject.CompareTag("NoInput")) noInputAllowed = false;
+		else if (col.gameObject.CompareTag("VerticalSaw")) {
+			enteredActionTrigger = false;
+			observedSaw = null;
+		}
 		//else if (col.gameObject.CompareTag("HoldRoll")) holdRoll = false;
 		holdRoll = false;
+	}
+
+	void ObserveSawDistance()
+	{
+		float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
+		float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
+		
+
+		if (distanceX < 0)
+		{
+			Debug.Log("Bye saw");
+			observedSaw.gameObject.SetActive(false);
+			observedSaw = null;
+
+		}
+		else if (distanceX < 0.95f && distanceY < 0.5f && distanceY >0f && distanceX + distanceY > 1.2f)
+		{
+			Debug.Log("Saute");
+			jumpTriggered = true;
+			observedSaw.gameObject.SetActive(false);
+			Debug.Log("Distance X " + (distanceX));
+			Debug.Log("Distance Y " + (distanceY));
+		}
+		//y ben plus petit que ]a
+		else if (distanceX < 0.85f && distanceY < 1)
+		{
+			Debug.Log("Ca roule ma poule");
+			rollTriggered = true;
+			observedSaw.gameObject.SetActive(false);
+			Debug.Log("Distance X " + (distanceX));
+			Debug.Log("Distance Y " + (distanceY));
+		}
 	}
 
 
