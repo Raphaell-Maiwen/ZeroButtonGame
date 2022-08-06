@@ -15,7 +15,9 @@ public class GameManager : MonoBehaviour
 	public List<obstacles> Obstacles = new List<obstacles>();		//Obstacles settings class;					
 	
 	public List<obstacles> ObstaclesTest = new List<obstacles>();
-	
+	public List<obstacles> ObstaclesTest2 = new List<obstacles>();
+	public bool completeTest;
+
 	public ui UI;													//UI class;
 	public float scorePerUnit = 1.0F;								//score per unit passed;
 	public AudioClip backGroundMusic;								//Background music if you want one;
@@ -46,6 +48,8 @@ public class GameManager : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+		if (completeTest) ObstaclesTest = ObstaclesTest2;
+
 		GetComponent<AudioSource>().volume = 0;
 		obstaclesPreloadCount = ObstaclesTest.Count*preloadObstaclesMultiplier;
 		level = new Transform[preloadLevelParts];

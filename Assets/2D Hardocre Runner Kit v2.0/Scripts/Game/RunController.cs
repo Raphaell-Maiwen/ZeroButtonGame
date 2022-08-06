@@ -47,6 +47,8 @@ public class RunController : MonoBehaviour
 	private float hitCount;
 	private Color deathEffectColor;
 
+	GameObject observedSaw;
+
 	void Start()
 	{
 
@@ -238,6 +240,7 @@ public class RunController : MonoBehaviour
 			if (animator) animator.SetTrigger("Death");
 			if (deathSFX && sfxOn) { GetComponent<AudioSource>().clip = deathSFX; GetComponent<AudioSource>().Play(); }
 			gameOver = true;
+			Debug.Log("Death");
 		}
 		grounded = true;
 	}
@@ -250,33 +253,61 @@ public class RunController : MonoBehaviour
 		}
 		else if (!enteredActionTrigger)
 		{
-			//Game over if collide with Obstacle;
 			if (col.gameObject.CompareTag("Jump"))
 			{
-				if (col.gameObject.GetComponent<SawTriggers>() && col.gameObject.GetComponent<SawTriggers>().verticalSaw)
-				{
-					//This was 1.3f before, then 1.35
-					if (col.gameObject.transform.position.y > 1.25f) {
-						jumpTriggered = true;
-						col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
-					} 
-				}
-				else jumpTriggered = true;
+				Debug.Log("On est dans un jump bitch " + col.gameObject.transform.position.y);
+
+				jumpTriggered = true;
 				Debug.Log("Jump! " + col.gameObject.transform.position.y + jumpTriggered);
 				enteredActionTrigger = true;
 			}
 			else if (col.gameObject.CompareTag("Roll"))
 			{
-				if (col.gameObject.GetComponent<SawTriggers>())
-				{
-					if (col.gameObject.GetComponent<SawTriggers>()) col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
-					//This was 1.5f before, then 1.4
-					if (col.gameObject.transform.position.y > 1.3f) rollTriggered = true;
-				}
-				else rollTriggered = true;
+				rollTriggered = true;
 				Debug.Log("Roll! " + col.gameObject.transform.position.y + rollTriggered);
 				enteredActionTrigger = true;
 			}
+			else if (col.gameObject.CompareTag("VerticalSaw"))
+			{
+				Debug.Log("On est dans le vertical saw");
+
+
+				float distanceX = col.gameObject.transform.position.x - gameObject.transform.position.x;
+				float distanceY = col.gameObject.transform.position.y - gameObject.transform.position.y;
+
+				if (distanceX + distanceY < 1.36f && distanceX < 1f) {
+					Debug.Log("Ca roule ma poule");
+					rollTriggered = true;
+					col.gameObject.SetActive(false);
+				}
+
+				//Useless condition check?
+				/*if (col.gameObject.GetComponent<SawTriggers>().verticalSaw)
+				{
+					//This was 1.3f before, then 1.35. 1.25 is great, maybe decouple 1.2 in another trigger
+					if (col.gameObject.transform.position.y > 1.2f)
+					{
+						Debug.LogWarning("OUI");
+						jumpTriggered = true;
+						col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
+					}
+				}*/
+
+				//if (col.gameObject.GetComponent<SawTriggers>()) col.gameObject.GetComponent<SawTriggers>().DisableTrigger();
+				
+				//This was 1.5f before, then 1.4.    1.3 allowed for a death???
+				/*if (col.gameObject.transform.position.y > 1.35f
+					|| (col.gameObject.transform.position.y > 1.21f && distanceX < 0.64f))
+				{
+					rollTriggered = true;
+					col.gameObject.SetActive(false);
+					//else jump?
+				}*/
+
+				Debug.Log("Distance X " + (distanceX));
+				Debug.Log("Distance Y " + (distanceY));
+			}
+
 
 			if (col.gameObject.CompareTag("HoldRoll"))
 			{
@@ -290,7 +321,8 @@ public class RunController : MonoBehaviour
 	{
 		if (col.gameObject.CompareTag("Jump") || col.gameObject.CompareTag("Roll")) enteredActionTrigger = false;
 		else if (col.gameObject.CompareTag("NoInput")) noInputAllowed = false;
-		else if (col.gameObject.CompareTag("HoldRoll")) holdRoll = false;
+		//else if (col.gameObject.CompareTag("HoldRoll")) holdRoll = false;
+		holdRoll = false;
 	}
 
 

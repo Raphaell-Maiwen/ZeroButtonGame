@@ -55,7 +55,7 @@ public class SawTriggers : MonoBehaviour
     }
 
     public void DisableTrigger() {
-        if (verticalSaw && rollTrigger) rollTrigger.SetActive(false);
-        else if (jumpTrigger) jumpTrigger.SetActive(false);
+        /*if (verticalSaw && rollTrigger) rollTrigger.SetActive(false);
+        else if (jumpTrigger) jumpTrigger.SetActive(false);*/
     }
 }
