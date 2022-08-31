@@ -11,7 +11,7 @@ public class RunController : MonoBehaviour
 	public Animator animator;                               //Player animator if we using one; Animator is preconfigured for using with idle,run,jump and death animations;
 	public enum Controls { JUMP_ONLY, JUMP_AND_SLIDE };     //Input types
 	public Controls controls;
-	public bool tapToStart;                                 //Tap to start playing;
+	public bool tapToStart = false;                                 //Tap to start playing;
 	public float minSpeed = 2.5F;                           //Player default speed;
 	public float maxSpeed = 3.5F;                           //Player max speed;
 	public float speedIncreaseFactor = 0.03F;               //Player speed increasing factor;
@@ -105,6 +105,13 @@ public class RunController : MonoBehaviour
 		{
 			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
 			roll = Input.GetMouseButtonDown(1) && rollDuration == 0;
+			if (observedSaw != null) {
+				float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
+				float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
+				/*Debug.Log("Input");
+				Debug.Log("Distance X " + (distanceX));
+				Debug.Log("Distance Y " + (distanceY));*/
+			}
 		}
 		else
 			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
@@ -131,6 +138,16 @@ public class RunController : MonoBehaviour
 			mainCollider.size = new Vector2(mainCollider.size.x, defaultColliderSize);
 			mainCollider.offset = new Vector2(mainCollider.offset.x, defaultolliderCenter);
 			jumpTriggered = false;
+			Debug.Log("Je confirme que le saut a été reçu");
+
+			if (observedSaw != null)
+			{
+				float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
+				float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
+				Debug.Log("Input");
+				Debug.Log("Distance X " + (distanceX));
+				Debug.Log("Distance Y " + (distanceY));
+			}
 		}
 
 		//Jumping
@@ -272,6 +289,10 @@ public class RunController : MonoBehaviour
 				Debug.Log("On est dans le vertical saw");
 
 				observedSaw = col.gameObject;
+				/*float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
+				float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
+				Debug.Log("Distance X " + (distanceX));
+				Debug.Log("Distance Y " + (distanceY));*/
 			}
 
 
@@ -299,7 +320,7 @@ public class RunController : MonoBehaviour
 	{
 		float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
 		float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
-		
+
 
 		if (distanceX < 0)
 		{
@@ -308,15 +329,22 @@ public class RunController : MonoBehaviour
 			observedSaw = null;
 
 		}
-		else if (distanceX < 0.95f && distanceY < 0.5f && distanceY >0f && distanceX + distanceY > 1.2f)
+		else if (jumpCounter == 0 && distanceX < 1.98f && distanceY < 0.5f && distanceX + distanceY > 1.2f)
 		{
 			Debug.Log("Saute");
+			jumpTriggered = true;
+			Debug.Log("Distance X " + (distanceX));
+			Debug.Log("Distance Y " + (distanceY));
+		}
+		/*else if (jumpCounter == 1 && distanceX < 1.85f && distanceY > -1.2f) {
+			Debug.Log("Saute AGAIN");
 			jumpTriggered = true;
 			observedSaw.gameObject.SetActive(false);
 			Debug.Log("Distance X " + (distanceX));
 			Debug.Log("Distance Y " + (distanceY));
-		}
-		//y ben plus petit que ]a
+		}*/
+		//y ben plus petit que ca
+		//mettre un boolean pour quand on est dans les sauts
 		else if (distanceX < 0.85f && distanceY < 1)
 		{
 			Debug.Log("Ca roule ma poule");
@@ -332,10 +360,10 @@ public class RunController : MonoBehaviour
 	public void Reset()
 	{
 		speed = minSpeed;
-		if (!tapToStart)
+		/*if (!tapToStart)
 			play = true;
 		else
-			play = false;
+			play = false;*/
 	}
 }
 
