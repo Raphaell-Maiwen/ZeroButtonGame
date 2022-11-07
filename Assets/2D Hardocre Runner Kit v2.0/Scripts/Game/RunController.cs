@@ -47,10 +47,16 @@ public class RunController : MonoBehaviour
 	private float hitCount;
 	private Color deathEffectColor;
 
-	GameObject observedSaw;
+	public class ObservedSaw {
+		public GameObject sawGO = null;
+		public SawTriggers sawScript = null;
+	}
+
+	ObservedSaw observedSaw;
 
 	void Start()
 	{
+		observedSaw = new ObservedSaw();
 
 		sfxOn = Prefs.GetBool("sfxOn");
 		GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("sfxVol");
@@ -119,7 +125,7 @@ public class RunController : MonoBehaviour
 			roll = false;
 		}
 
-		if(observedSaw != null) ObserveSawDistance();
+		if(observedSaw.sawGO != null) ObserveSawDistance();
 
 		if (!jump) jump = jumpTriggered;
 		if (!roll && rollDuration <= 0) roll = rollTriggered;
@@ -242,7 +248,7 @@ public class RunController : MonoBehaviour
 			if (animator) animator.SetTrigger("Death");
 			if (deathSFX && sfxOn) { GetComponent<AudioSource>().clip = deathSFX; GetComponent<AudioSource>().Play(); }
 			gameOver = true;
-			Debug.Log("Death");
+			Debug.Log("Death" + col.gameObject.name);
 		}
 		grounded = true;
 	}
@@ -270,8 +276,15 @@ public class RunController : MonoBehaviour
 			else if (col.gameObject.CompareTag("VerticalSaw"))
 			{
 				Debug.Log("On est dans le vertical saw");
+				
+				observedSaw.sawGO = col.gameObject;
+				observedSaw.sawScript = col.gameObject.GetComponent<SawTriggers>();
 
-				observedSaw = col.gameObject;
+				float distanceX = observedSaw.sawGO.transform.position.x - gameObject.transform.position.x;
+				float distanceY = observedSaw.sawGO.transform.position.y - gameObject.transform.position.y;
+
+				Debug.Log("Distance X " + (distanceX));
+				Debug.Log("Distance Y " + (distanceY));
 			}
 
 
@@ -289,7 +302,7 @@ public class RunController : MonoBehaviour
 		else if (col.gameObject.CompareTag("NoInput")) noInputAllowed = false;
 		else if (col.gameObject.CompareTag("VerticalSaw")) {
 			enteredActionTrigger = false;
-			observedSaw = null;
+			observedSaw.sawGO = null;
 		}
 		//else if (col.gameObject.CompareTag("HoldRoll")) holdRoll = false;
 		holdRoll = false;
@@ -297,34 +310,41 @@ public class RunController : MonoBehaviour
 
 	void ObserveSawDistance()
 	{
-		float distanceX = observedSaw.gameObject.transform.position.x - gameObject.transform.position.x;
-		float distanceY = observedSaw.gameObject.transform.position.y - gameObject.transform.position.y;
+		float distanceX = observedSaw.sawGO.transform.position.x - gameObject.transform.position.x;
+		float distanceY = observedSaw.sawGO.transform.position.y - gameObject.transform.position.y;
 		
 
-		if (distanceX < 0)
+		if (distanceX < 0 || !observedSaw.sawScript.ColliderActive)
 		{
 			Debug.Log("Bye saw");
-			observedSaw.gameObject.SetActive(false);
-			observedSaw = null;
-
+			observedSaw.sawGO.SetActive(false);
+			observedSaw.sawGO = null;
 		}
-		else if (distanceX < 0.95f && distanceY < 0.5f && distanceY >0f && distanceX + distanceY > 1.2f)
+
+		//direction vers le bas + un range de distanceY distanceY < 0.39f distanceY > 0.337f
+		//Y'a un saute qui a bien fonctionné à 0.7463 :D + un autre
+		 //+un à 0.7472
+		//0.2852 qui a mal fonctionné :(
+		//J'avais essayé à <0.75 et ça avait fail à 0.746363
+		else if (distanceY < 0.75f && distanceY > 0.286f) //(distanceX < 0.95f && distanceY < 0.5f && distanceY >0f && distanceX + distanceY > 1.2f)
 		{
 			Debug.Log("Saute");
 			jumpTriggered = true;
-			observedSaw.gameObject.SetActive(false);
+			observedSaw.sawGO.SetActive(false);
 			Debug.Log("Distance X " + (distanceX));
 			Debug.Log("Distance Y " + (distanceY));
 		}
-		//y ben plus petit que ]a
-		else if (distanceX < 0.85f && distanceY < 1)
+		//Ca a marché à 0.751
+		//747989
+		else if (distanceY < 0.8f && distanceY > 0.25f)//(distanceX < 0.85f && distanceY < 1)
 		{
 			Debug.Log("Ca roule ma poule");
 			rollTriggered = true;
-			observedSaw.gameObject.SetActive(false);
+			observedSaw.sawGO.SetActive(false);
 			Debug.Log("Distance X " + (distanceX));
 			Debug.Log("Distance Y " + (distanceY));
 		}
+
 	}
 
 
