@@ -20,7 +20,7 @@ public class SawTriggers : MonoBehaviour
             MovingObstacle movingObstacle = SawToFollow.gameObject.GetComponent<MovingObstacle>();
             movingObstacle.updateSawTriggers.Add(UpdateSawTrigger);
 
-            if (movingObstacle.point == 0)
+            /*if (movingObstacle.point == 0)
             {
                 this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
                 this.gameObject.GetComponent<SpriteRenderer>().enabled = false;
@@ -31,7 +31,7 @@ public class SawTriggers : MonoBehaviour
                 this.gameObject.GetComponent<BoxCollider2D>().enabled = true;
                 this.gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 ColliderActive = true;
-            }
+            }*/
         }
     }
 

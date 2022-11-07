@@ -7,7 +7,7 @@ public class HorizontalSaw : MonoBehaviour
     public GameObject jumpCollider;
     public Transform SawToFollow;
 
-    bool ColliderActive = false;
+    bool ColliderActive = true;
 
     private void Start()
     {
@@ -15,18 +15,18 @@ public class HorizontalSaw : MonoBehaviour
         MovingObstacle movingObstacle = SawToFollow.gameObject.GetComponent<MovingObstacle>();
         movingObstacle.updateSawTriggers.Add(UpdateSawTrigger);
 
-        if (movingObstacle.point == 1)
+        /*if (movingObstacle.point == 1)
         {
             jumpCollider.GetComponent<BoxCollider2D>().enabled = false;
             jumpCollider.GetComponent<SpriteRenderer>().enabled = false;
             ColliderActive = false;
         }
         else
-        {
+        {*/
             jumpCollider.GetComponent<BoxCollider2D>().enabled = true;
             jumpCollider.GetComponent<SpriteRenderer>().enabled = true;
             ColliderActive = true;
-        }
+        //}
     }
 
     public void UpdateSawTrigger()
