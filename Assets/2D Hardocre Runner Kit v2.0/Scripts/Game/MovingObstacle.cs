@@ -40,14 +40,23 @@ public class MovingObstacle : MonoBehaviour {
 			point = 0;
 		}
 
-		if ((goingUp && moveDir.y < 0) ||(!goingUp && moveDir.y > 0)) {
+		/*if ((goingUp && moveDir.y < 0) ||(!goingUp && moveDir.y > 0)) {
 			goingUp = !goingUp;
 			for (int i = 0; i < updateSawTriggers.Count; i++) {
 				updateSawTriggers[i]();
 			}
+		}*/
+
+		if ((goingUp && moveDir.x < 0) || (!goingUp && moveDir.x > 0))
+		{
+			goingUp = !goingUp;
+			for (int i = 0; i < updateSawTriggers.Count; i++)
+			{
+				updateSawTriggers[i]();
+			}
 		}
 
-		if(moveDir.x < 0)
+		if (moveDir.x < 0)
 			newRotationSpeed = rotationSpeed;
 		else
 			newRotationSpeed = -rotationSpeed;

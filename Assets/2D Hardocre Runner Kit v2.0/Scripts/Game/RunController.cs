@@ -255,11 +255,11 @@ public class RunController : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D col)
 	{
-		if (col.gameObject.CompareTag("NoInput"))
+		/*if (col.gameObject.CompareTag("NoInput"))
 		{
 			noInputAllowed = true;
-		}
-		else if (!enteredActionTrigger)
+		}*/
+		if (!enteredActionTrigger)
 		{
 			if (col.gameObject.CompareTag("Jump"))
 			{
