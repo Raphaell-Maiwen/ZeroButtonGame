@@ -47,7 +47,7 @@ public class MovingObstacle : MonoBehaviour {
 			}
 		}*/
 
-		if ((goingUp && moveDir.x < 0) || (!goingUp && moveDir.x > 0))
+		if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
 		{
 			goingUp = !goingUp;
 			for (int i = 0; i < updateSawTriggers.Count; i++)

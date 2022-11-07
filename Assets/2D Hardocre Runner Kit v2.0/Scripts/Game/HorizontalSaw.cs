@@ -33,10 +33,9 @@ public class HorizontalSaw : MonoBehaviour
     {
         /*Debug.Log("GettingCalled");
         Debug.Log(ColliderActive);*/
+        ColliderActive = !ColliderActive;
 
         jumpCollider.GetComponent<BoxCollider2D>().enabled = ColliderActive;
         jumpCollider.GetComponent<SpriteRenderer>().enabled = ColliderActive;
-
-        ColliderActive = !ColliderActive;
     }
 }

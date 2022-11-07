@@ -41,9 +41,9 @@ public class SawTriggers : MonoBehaviour
     }
 
     public void UpdateSawTrigger() {
-        ColliderActive = !ColliderActive;
+        /*ColliderActive = !ColliderActive;
         this.gameObject.GetComponent<BoxCollider2D>().enabled = ColliderActive;
-        this.gameObject.GetComponent<SpriteRenderer>().enabled = ColliderActive;
+        this.gameObject.GetComponent<SpriteRenderer>().enabled = ColliderActive;*/
     }
 
     public void FollowSaw() {

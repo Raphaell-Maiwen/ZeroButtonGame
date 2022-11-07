@@ -36,6 +36,7 @@ public class RunController : MonoBehaviour
 
 	private Vector3 velocity;
 	private BoxCollider2D mainCollider;
+	[SerializeField]
 	private float speed, rollDuration, moveSpeed;
 	private Rigidbody2D thisRigidbody;
 	private bool grounded, sfxOn;
