@@ -12,7 +12,8 @@ public class MovingObstacle : MonoBehaviour {
 	private float newRotationSpeed;
 	private Transform thisTransform;
 
-	bool goingUp;
+	[HideInInspector]
+	public bool goingUp;
 
 	public List<UnityAction> updateSawTriggers = new List<UnityAction>();
 
