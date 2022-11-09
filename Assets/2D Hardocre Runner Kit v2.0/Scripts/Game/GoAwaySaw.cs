@@ -6,17 +6,28 @@ public class GoAwaySaw : MonoBehaviour
 {
     public MovingObstacle sawScript;
     public GameObject jumpCollider;
-    private bool sawInCollider = false;
+    public GameObject sawGO;
+    public bool sawInCollider = false;
+    public bool playerInCollider = false;
+
+    //TODO: Maybe use this for performance issues
+    //public int sawId;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.gameObject == sawGO)
         {
             sawInCollider = true;
+            if (playerInCollider && sawScript.goingUp)
+            {
+                Debug.Log("Let's goooo");
+                sawScript.goingUp = !sawScript.goingUp;
+                sawScript.point = 1;
+            }
         }
-        //TODO: À compléter parce que c'est con
         else if (collision.gameObject.CompareTag("Player"))
         {
+            playerInCollider = true;
             if (sawInCollider && sawScript.goingUp)
             {
                 Debug.Log("Let's goooo");
@@ -29,12 +40,15 @@ public class GoAwaySaw : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        //Debug.Log("Ca arrive");
-        if (other.gameObject.CompareTag("Obstacle"))
+        if (other.gameObject == sawGO)
         {
             sawInCollider = false;
             jumpCollider.GetComponent<BoxCollider2D>().enabled = false;
             jumpCollider.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else if (other.gameObject.CompareTag("Player"))
+        {
+            playerInCollider = false;
         }
     }
 }

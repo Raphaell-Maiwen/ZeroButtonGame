@@ -249,7 +249,7 @@ public class RunController : MonoBehaviour
 			if (animator) animator.SetTrigger("Death");
 			if (deathSFX && sfxOn) { GetComponent<AudioSource>().clip = deathSFX; GetComponent<AudioSource>().Play(); }
 			gameOver = true;
-			Debug.Log("Death" + col.gameObject.name);
+			//Debug.Log("Death" + col.gameObject.name);
 		}
 		grounded = true;
 	}
@@ -265,7 +265,7 @@ public class RunController : MonoBehaviour
 			if (col.gameObject.CompareTag("Jump"))
 			{
 				jumpTriggered = true;
-				Debug.Log("Jump! " + col.gameObject.transform.position.y + jumpTriggered);
+				//Debug.Log("Jump! " + col.gameObject.transform.position.y + jumpTriggered);
 				enteredActionTrigger = true;
 			}
 			else if (col.gameObject.CompareTag("Roll"))
