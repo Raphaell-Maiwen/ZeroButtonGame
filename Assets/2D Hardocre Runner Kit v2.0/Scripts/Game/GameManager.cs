@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
 	void Update () {
 
 		UI.scoreUI.text = "Score:" + score.ToString("F0");
-		UI.coinsUI.text = collectedCoins.ToString ();
+		//UI.coinsUI.text = collectedCoins.ToString ();
 		if(Input.GetKey(KeyCode.Escape))Application.Quit();
 		
 		if(UI.startHintUI)
