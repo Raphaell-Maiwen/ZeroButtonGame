@@ -48,6 +48,9 @@ public class RunController : MonoBehaviour
 	private float hitCount;
 	private Color deathEffectColor;
 
+	public delegate void TutorialDelegate(GameManager.ActionDone action);
+	public TutorialDelegate ProgressTutorial;
+
 	public class ObservedSaw {
 		public GameObject sawGO = null;
 		public SawTriggers sawScript = null;
@@ -165,6 +168,7 @@ public class RunController : MonoBehaviour
 			}
 			rollDuration = RollDuration;
 			rollTriggered = false;
+			ProgressTutorial(GameManager.ActionDone.Roll);
 		}
 
 		//Moving
@@ -239,6 +243,9 @@ public class RunController : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D col)
 	{
+		if (jumpCounter == 1) ProgressTutorial(GameManager.ActionDone.Jump);
+		else if (jumpCounter == 2) ProgressTutorial(GameManager.ActionDone.DoubleJump);
+
 		jumpCounter = 0;    //reset jump counter;
 
 		if (col.gameObject.CompareTag("Obstacle") && !gameOver)

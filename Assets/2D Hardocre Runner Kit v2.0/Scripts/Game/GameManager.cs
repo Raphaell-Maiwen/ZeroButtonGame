@@ -40,6 +40,26 @@ public class GameManager : MonoBehaviour
 	[HideInInspector]public bool musicOn, sfxOn;
 	[HideInInspector]public int collectedCoins;
 
+	TutorialStep[] tutorialSteps;
+	int tutorialStepIndex = 0;
+
+	bool tutorialOver = false;
+
+	public enum ActionDone { 
+		Jump,
+		DoubleJump,
+		Roll,
+	}
+
+	struct TutorialStep {
+		public ActionDone action;
+		public string text;
+
+		public TutorialStep(ActionDone newAction, string newText) {
+			this.action = newAction;
+			this.text = newText;
+		}
+	}
 
 	void Awake()
 	{
@@ -48,6 +68,9 @@ public class GameManager : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Left-click to jump."),
+			new TutorialStep(ActionDone.DoubleJump, "Left-click twice to double-jump."), new TutorialStep(ActionDone.Roll, "Right-click to roll.")};
+
 		if (completeTest) ObstaclesTest = ObstaclesTest2;
 
 		GetComponent<AudioSource>().volume = 0;
@@ -77,6 +100,7 @@ public class GameManager : MonoBehaviour
 		}
 
 		playerControls = Player.GetComponent<RunController>();
+		playerControls.ProgressTutorial = NextStepTutorial;
 		
 		if(levelPart.GetComponent<Collider2D>() != null && levelPart.GetComponent<BoxCollider2D>() == null)
 		{
@@ -89,7 +113,7 @@ public class GameManager : MonoBehaviour
 		distanceInterval = col.size.x;					//distance interval depends on the level part collider size X;
 		
 		LoadLevel();									//Load level parts;
-		StartCoroutine ("LoadObstacles");				//Load obstacles;
+		//StartCoroutine ("LoadObstacles");				//Load obstacles;
 
 
 		UI.restrartButton.onClick.AddListener(RestartLevel);
@@ -104,19 +128,6 @@ public class GameManager : MonoBehaviour
 		UI.scoreUI.text = "Score:" + score.ToString("F0");
 		//UI.coinsUI.text = collectedCoins.ToString ();
 		if(Input.GetKey(KeyCode.Escape))Application.Quit();
-		
-		if(UI.startHintUI)
-		{
-			if(!playerControls.play)
-			{
-				UI.startHintUI.enabled = true;
-
-				if(!GetComponent<AudioSource>().isPlaying)
-					GetComponent<AudioSource>().volume = 0;
-			}
-			else 
-				UI.startHintUI.enabled = false;
-		}
 
 		if(!playerControls.gameOver && playerControls.play && backGroundMusic && musicOn)
 		{
@@ -168,50 +179,72 @@ public class GameManager : MonoBehaviour
 			UI.exitButton.gameObject.SetActive(false);
 			UI.menuButton.gameObject.SetActive(false);
 		}
-		
+
 		//Level and obstacles reloading depending on player's position;
+
 		
 		for (int i = 0; i < level.Length; i++)
 		{
-			if(Player.position.x > level[i].position.x + distanceInterval*preloadLevelParts/2)
+			if (Player.position.x > level[i].position.x + distanceInterval * preloadLevelParts / 2)
 			{
 				level[i].position = new Vector3(levelStartPoint.position.x + nextDistance, levelStartPoint.position.y, levelStartPoint.position.z);
 				nextDistance += distanceInterval;
 			}
 		}
 
-		foreach (obstacles obs in ObstaclesTest)
+		if (tutorialOver)
 		{
-			for (int i = 0; i < obs.preloadedObstacles.Count; i++)
+			foreach (obstacles obs in ObstaclesTest)
 			{
-				if(obs.preloadedObstacles[i].position.x <= Player.position.x - 10.0F && !obs.passedObstacles.Contains(obs.preloadedObstacles[i]))
+				for (int i = 0; i < obs.preloadedObstacles.Count; i++)
 				{
-					obs.passedObstacles.Add(obs.preloadedObstacles[i]);
-					passed ++;
-				}
-			}
-			
-			for (int i = 0; i < obs.passedObstacles.Count; i++)
-			{
-				//if obstacle type is coins, we getting all child coins, and setting it to active;
-				if(obs.passedObstacles[i].childCount > 0)
-				{
-					for(int c = 0; c < obs.passedObstacles[i].childCount; c++)
-						obs.passedObstacles[i].GetChild(c).gameObject.SetActive(true);
+					if (obs.preloadedObstacles[i].position.x <= Player.position.x - 10.0F && !obs.passedObstacles.Contains(obs.preloadedObstacles[i]))
+					{
+						obs.passedObstacles.Add(obs.preloadedObstacles[i]);
+						passed++;
+					}
 				}
 
-				rnd = Random.Range(0, ObstaclesTest.Count);
-				for (int x = 0; x < ObstaclesTest[rnd].passedObstacles.Count; x++)
+				for (int i = 0; i < obs.passedObstacles.Count; i++)
 				{
-					if(passed == obstaclesPreloadCount/2 && ObstaclesTest[rnd].passedObstacles.Count == obs.passedObstacles.Count)
+					//if obstacle type is coins, we getting all child coins, and setting it to active;
+					if (obs.passedObstacles[i].childCount > 0)
 					{
-						newObstaclePos.y = levelStartPoint.position.y + Random.Range(ObstaclesTest[rnd].Positions.min.y, ObstaclesTest[rnd].Positions.max.y);
-						ObstaclesTest[rnd].passedObstacles[i].position = levelStartPoint.position + newObstaclePos;
-						ObstaclesTest[rnd].passedObstacles[i].gameObject.SetActive(true);
-						newObstaclePos.x += Random.Range(ObstaclesTest[rnd].Positions.min.x, ObstaclesTest[rnd].Positions.max.x);
-						ObstaclesTest[rnd].passedObstacles.RemoveAt(i);
-						passed--;
+						for (int c = 0; c < obs.passedObstacles[i].childCount; c++)
+							obs.passedObstacles[i].GetChild(c).gameObject.SetActive(true);
 					}
+
+					rnd = Random.Range(0, ObstaclesTest.Count);
+					for (int x = 0; x < ObstaclesTest[rnd].passedObstacles.Count; x++)
+					{
+						if (passed == obstaclesPreloadCount / 2 && ObstaclesTest[rnd].passedObstacles.Count == obs.passedObstacles.Count)
+						{
+							newObstaclePos.y = levelStartPoint.position.y + Random.Range(ObstaclesTest[rnd].Positions.min.y, ObstaclesTest[rnd].Positions.max.y);
+							ObstaclesTest[rnd].passedObstacles[i].position = levelStartPoint.position + newObstaclePos;
+							ObstaclesTest[rnd].passedObstacles[i].gameObject.SetActive(true);
+							newObstaclePos.x += Random.Range(ObstaclesTest[rnd].Positions.min.x, ObstaclesTest[rnd].Positions.max.x);
+							ObstaclesTest[rnd].passedObstacles.RemoveAt(i);
+							passed--;
+						}
+					}
+				}
+			}
+		}
+		else 
+		{
+			if (UI.startHintUI)
+			{
+				if (!playerControls.play)
+				{
+					UI.startHintUI.enabled = true;
+
+					if (!GetComponent<AudioSource>().isPlaying)
+						GetComponent<AudioSource>().volume = 0;
+				}
+				else
+				{
+					UI.startHintUI.enabled = false;
+					ShowTutorialText();
 				}
 			}
 		}
@@ -280,6 +313,30 @@ public class GameManager : MonoBehaviour
 			level[i].position = new Vector3(levelStartPoint.position.x + nextDistance, levelStartPoint.position.y, levelStartPoint.position.z);
 		}
 		ReloadObstacles ();
+	}
+
+	private void ShowTutorialText() {
+		UI.tutorialsText.text = tutorialSteps[tutorialStepIndex].text;
+	}
+
+	//TODO: Check if tutorial already done
+	public void NextStepTutorial(ActionDone action) {
+		if (tutorialStepIndex >= tutorialSteps.Length) return;
+
+		if (action == tutorialSteps[tutorialStepIndex].action) {
+			tutorialStepIndex++;
+
+			if (tutorialStepIndex >= tutorialSteps.Length)
+			{
+				UI.tutorialsText.enabled = false;
+				tutorialOver = true;
+				ReloadLevel();
+				Player.position = PlayerSpawnPoint.position;
+			}
+			else {
+				ShowTutorialText();
+			}
+		}
 	}
 
 	//Load obstacles function;
@@ -360,7 +417,7 @@ public class positions
 [System.Serializable]
 public class ui
 {
-	public Text scoreUI, newRecordUI, startHintUI, coinsUI;
+	public Text scoreUI, newRecordUI, startHintUI, coinsUI, tutorialsText;
 	public Button restrartButton, exitButton, menuButton;
 	public AudioClip clickSound;
 }
