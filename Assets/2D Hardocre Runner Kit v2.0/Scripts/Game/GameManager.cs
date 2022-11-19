@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
 
 	bool tutorialOver = false;
 
+	public bool testWithoutTutorial;
+
 	public enum ActionDone { 
 		Jump,
 		DoubleJump,
@@ -112,8 +114,13 @@ public class GameManager : MonoBehaviour
 		
 		distanceInterval = col.size.x;					//distance interval depends on the level part collider size X;
 		
-		LoadLevel();									//Load level parts;
-		//StartCoroutine ("LoadObstacles");				//Load obstacles;
+		LoadLevel();                                    //Load level parts;
+		if (testWithoutTutorial) {
+			StartCoroutine("LoadObstacles");                //Load obstacles;
+			tutorialOver = true;
+			UI.tutorialsText.enabled = false;
+			tutorialStepIndex = 1000;
+		}
 
 
 		UI.restrartButton.onClick.AddListener(RestartLevel);

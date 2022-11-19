@@ -51,6 +51,11 @@ public class RunController : MonoBehaviour
 	public delegate void TutorialDelegate(GameManager.ActionDone action);
 	public TutorialDelegate ProgressTutorial;
 
+	public float inputDelay = 0.2f;
+	public float lastInputTimeStamp;
+	public bool lastInputComputer;
+	public bool jumpDisabledIsh;
+
 	public class ObservedSaw {
 		public GameObject sawGO = null;
 		public SawTriggers sawScript = null;
@@ -95,9 +100,18 @@ public class RunController : MonoBehaviour
 
 	void Update()
 	{
+		if (Time.time - lastInputTimeStamp >= inputDelay)
+		{
+			bool temp = jumpDisabledIsh;
+			jumpDisabledIsh = false;
+			if (temp != jumpDisabledIsh) Debug.Log("Allowed again. " + Time.time);
+		}
+
 		//Platform depending controls;
 
+		//TODO: Stuff delay
 #if UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8
+
 		foreach (Touch touch in Input.touches)
 		{
 			if(controls == Controls.JUMP_AND_SLIDE)
@@ -111,16 +125,15 @@ public class RunController : MonoBehaviour
 #endif
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WEBPLAYER || UNITY_EDITOR
-		if (controls == Controls.JUMP_AND_SLIDE)
-		{
+		//TODO: Stuff delay
+		if (!jumpDisabledIsh || !lastInputComputer) {
 			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
-			roll = Input.GetMouseButtonDown(1) && rollDuration == 0;
 		}
-		else
-			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
+			
+		roll = Input.GetMouseButtonDown(1) && rollDuration == 0;
 #endif
 
-		speed = Mathf.Clamp(speed, minSpeed, maxSpeed);         //clamp speed value with max speed;
+		speed = Mathf.Clamp(speed, minSpeed, maxSpeed);
 
 
 		if (noInputAllowed)
@@ -131,7 +144,15 @@ public class RunController : MonoBehaviour
 
 		if(observedSaw.sawGO != null) ObserveSawDistance();
 
-		if (!jump) jump = jumpTriggered;
+		if (jump)
+		{
+			jumpDisabledIsh = true;
+			lastInputComputer = false;
+			lastInputTimeStamp = Time.time;
+			Debug.Log("Player jumps");
+		}
+		else jump = jumpTriggered;
+
 		if (!roll && rollDuration <= 0) roll = rollTriggered;
 		if (!roll) roll = holdRoll;
 
@@ -256,7 +277,7 @@ public class RunController : MonoBehaviour
 			if (animator) animator.SetTrigger("Death");
 			if (deathSFX && sfxOn) { GetComponent<AudioSource>().clip = deathSFX; GetComponent<AudioSource>().Play(); }
 			gameOver = true;
-			//Debug.Log("Death" + col.gameObject.name);
+			Debug.Log("Death");
 		}
 		grounded = true;
 	}
@@ -271,9 +292,16 @@ public class RunController : MonoBehaviour
 		{
 			if (col.gameObject.CompareTag("Jump"))
 			{
-				jumpTriggered = true;
-				//Debug.Log("Jump! " + col.gameObject.transform.position.y + jumpTriggered);
-				enteredActionTrigger = true;
+				if (!jumpDisabledIsh || lastInputComputer)
+				{
+					Debug.Log("Computer Jumps");
+					jumpTriggered = true;
+					jumpDisabledIsh = true;
+					lastInputComputer = true;
+					lastInputTimeStamp = Time.time;
+
+					enteredActionTrigger = true;
+				}
 			}
 			else if (col.gameObject.CompareTag("Roll"))
 			{
@@ -299,7 +327,6 @@ public class RunController : MonoBehaviour
 			if (col.gameObject.CompareTag("HoldRoll"))
 			{
 				holdRoll = true;
-				Debug.Log(col.gameObject.GetComponent<SawTriggers>().ColliderActive);
 			}
 		}
 	}
