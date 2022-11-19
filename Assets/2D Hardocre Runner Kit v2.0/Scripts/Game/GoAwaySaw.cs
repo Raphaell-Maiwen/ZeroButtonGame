@@ -10,12 +10,20 @@ public class GoAwaySaw : MonoBehaviour
     public bool sawInCollider = false;
     public bool playerInCollider = false;
 
+    private int sawId;
+
     //TODO: Maybe use this for performance issues
     //public int sawId;
 
+    private void Start()
+    {
+        sawId = sawGO.GetInstanceID();
+        Debug.Log(sawId);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject == sawGO)
+        if (collision.gameObject.GetInstanceID() == sawId)
         {
             sawInCollider = true;
             if (playerInCollider && sawScript.goingUp)
