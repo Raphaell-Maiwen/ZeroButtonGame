@@ -126,6 +126,7 @@ public class RunController : MonoBehaviour
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WEBPLAYER || UNITY_EDITOR
 		//TODO: Stuff delay
+		jump = false;
 		if (!jumpDisabledIsh || !lastInputComputer) {
 			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
 		}
