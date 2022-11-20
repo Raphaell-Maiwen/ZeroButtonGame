@@ -21,7 +21,7 @@ public class SwitchJump : MonoBehaviour
         if (collision.gameObject.GetInstanceID() == sawId)
         {
             jumpCollider.GetComponent<BoxCollider2D>().enabled = turningOn;
-            jumpCollider.GetComponent<SpriteRenderer>().enabled = turningOn;
+            //jumpCollider.GetComponent<SpriteRenderer>().enabled = turningOn;
         }
     }
 }
