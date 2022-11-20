@@ -105,7 +105,8 @@ public class _MovingObstacle : Editor {
 				myTarget.rotationSpeed = EditorGUILayout.FloatField("Rotation Speed", myTarget.rotationSpeed);
 				myTarget.targetPoint = EditorGUILayout.IntField("Start Waypoint", myTarget.targetPoint);
 				myTarget.targetPoint = Mathf.Clamp(myTarget.targetPoint, 1, myTarget.wayPoint.Count);
-			}
+				myTarget.isVerticalSaw = EditorGUILayout.Toggle("Is Vertical Saw", myTarget.isVerticalSaw);
+		}
 			GUILayout.Space(5);
 		EditorGUILayout.EndVertical();
 

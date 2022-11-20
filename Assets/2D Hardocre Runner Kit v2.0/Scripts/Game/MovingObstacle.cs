@@ -14,6 +14,8 @@ public class MovingObstacle : MonoBehaviour {
 
 	public bool goingUp;
 
+	public bool isVerticalSaw;
+
 	public List<UnityAction> updateSawTriggers = new List<UnityAction>();
 
 	void Start () {
@@ -40,14 +42,17 @@ public class MovingObstacle : MonoBehaviour {
 			point = 0;
 		}
 
-		/*if ((goingUp && moveDir.y < 0) ||(!goingUp && moveDir.y > 0)) {
-			goingUp = !goingUp;
-			for (int i = 0; i < updateSawTriggers.Count; i++) {
-				updateSawTriggers[i]();
+		if (isVerticalSaw) {
+			if ((goingUp && moveDir.y < 0) || (!goingUp && moveDir.y > 0))
+			{
+				goingUp = !goingUp;
+				for (int i = 0; i < updateSawTriggers.Count; i++)
+				{
+					updateSawTriggers[i]();
+				}
 			}
-		}*/
-
-		if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
+		}
+		else if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
 		{
 			goingUp = !goingUp;
 			for (int i = 0; i < updateSawTriggers.Count; i++)
