@@ -14,7 +14,6 @@ public class SwitchJump : MonoBehaviour
     private void Start()
     {
         sawId = sawGO.GetInstanceID();
-        Debug.Log(sawId);
     }
 
     private void OnTriggerEnter2D(Collider2D collision){

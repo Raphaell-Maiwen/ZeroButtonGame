@@ -104,7 +104,6 @@ public class RunController : MonoBehaviour
 		{
 			bool temp = jumpDisabledIsh;
 			jumpDisabledIsh = false;
-			if (temp != jumpDisabledIsh) Debug.Log("Allowed again. " + Time.time);
 		}
 
 		//Platform depending controls;
@@ -150,7 +149,6 @@ public class RunController : MonoBehaviour
 			jumpDisabledIsh = true;
 			lastInputComputer = false;
 			lastInputTimeStamp = Time.time;
-			Debug.Log("Player jumps");
 		}
 		else jump = jumpTriggered;
 
@@ -295,7 +293,6 @@ public class RunController : MonoBehaviour
 			{
 				if (!jumpDisabledIsh || lastInputComputer)
 				{
-					Debug.Log("Computer Jumps");
 					jumpTriggered = true;
 					jumpDisabledIsh = true;
 					lastInputComputer = true;
@@ -307,7 +304,6 @@ public class RunController : MonoBehaviour
 			else if (col.gameObject.CompareTag("Roll"))
 			{
 				rollTriggered = true;
-				Debug.Log("Roll! " + col.gameObject.transform.position.y + rollTriggered);
 				enteredActionTrigger = true;
 			}
 			else if (col.gameObject.CompareTag("VerticalSaw"))
