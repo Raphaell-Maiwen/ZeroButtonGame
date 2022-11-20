@@ -322,6 +322,7 @@ public class RunController : MonoBehaviour
 
 				Debug.Log("Distance X " + (distanceX));
 				Debug.Log("Distance Y " + (distanceY));
+				rollTriggered = true;
 			}
 
 
