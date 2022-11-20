@@ -48,7 +48,7 @@ public class GoAwaySaw : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject == sawGO)
+        if (other.gameObject.GetInstanceID() == sawId)
         {
             sawInCollider = false;
             jumpCollider.GetComponent<BoxCollider2D>().enabled = false;
