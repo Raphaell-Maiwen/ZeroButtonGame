@@ -75,20 +75,13 @@ public class MovingObstacle : MonoBehaviour {
 				}
 			}
 
-			if (!goingUp && this.transform.position.y < 1.5)
+			if (!goingUp && this.transform.position.y < 1.6)
 			{
 				for (int i = 0; i < updateBunchTriggers.Count; i++)
 				{
 					updateBunchTriggers[i]();
 				}
 			}
-			/*else if (goingUp && this.transform.position.y > 1)
-			{
-				for (int i = 0; i < disableBunchTriggers.Count; i++)
-				{
-					disableBunchTriggers[i]();
-				}
-			}*/
 		}
 		else if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
 		{
