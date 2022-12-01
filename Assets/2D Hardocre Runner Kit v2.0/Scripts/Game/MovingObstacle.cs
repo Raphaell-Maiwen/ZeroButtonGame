@@ -58,7 +58,14 @@ public class MovingObstacle : MonoBehaviour {
 				ResetTriggers();
 			}
 
-			if (!goingUp && moveDir.y > 0) goingUp = !goingUp;
+			if (!goingUp && moveDir.y > 0) {
+				goingUp = !goingUp;
+
+				for (int i = 0; i < disableBunchTriggers.Count; i++)
+				{
+					disableBunchTriggers[i]();
+				}
+			}
 			else if ((goingUp && moveDir.y < 0))
 			{
 				goingUp = !goingUp;
@@ -75,13 +82,13 @@ public class MovingObstacle : MonoBehaviour {
 					updateBunchTriggers[i]();
 				}
 			}
-			else if (goingUp && this.transform.position.y > 1)
+			/*else if (goingUp && this.transform.position.y > 1)
 			{
 				for (int i = 0; i < disableBunchTriggers.Count; i++)
 				{
 					disableBunchTriggers[i]();
 				}
-			}
+			}*/
 		}
 		else if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
 		{
