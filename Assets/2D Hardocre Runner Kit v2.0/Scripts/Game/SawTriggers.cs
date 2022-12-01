@@ -10,6 +10,7 @@ public class SawTriggers : MonoBehaviour
     public float xModifier;
     public float yModifier;
     public bool verticalSaw;
+    private bool initialVerticalSaw;
     public bool canDisableTriggers;
 
     public bool ColliderActive;
@@ -21,12 +22,14 @@ public class SawTriggers : MonoBehaviour
 
     private void Start()
     {
+        initialVerticalSaw = verticalSaw;
         FollowSaw();
         if (verticalSaw) {
             movingObstacleScript.updateRollTriggers.Add(EnableRollTrigger);
             movingObstacleScript.disableRollTriggers.Add(DisableRollTrigger);
             movingObstacleScript.updateBunchTriggers.Add(EnableBunchTriggers);
             movingObstacleScript.disableBunchTriggers.Add(DisableBunchTriggers);
+            movingObstacleScript.resetInitialState.Add(ResetInitialState);
         }
     }
 
@@ -35,18 +38,22 @@ public class SawTriggers : MonoBehaviour
         FollowSaw();
     }
 
+    public void ResetInitialState() {
+        verticalSaw = initialVerticalSaw;
+    }
+
     public void EnableRollTrigger() {
-        if(rollTrigger)
+        if(rollTrigger && verticalSaw)
             rollTrigger.SetActive(true);
     }
 
     public void DisableRollTrigger() {
-        if (rollTrigger)
+        if (rollTrigger && verticalSaw)
             rollTrigger.SetActive(false);
     }
 
     public void EnableBunchTriggers() {
-        if (bunchOfTriggers) {
+        if (bunchOfTriggers && verticalSaw) {
             rollTrigger.SetActive(false);
             bunchOfTriggers.SetActive(true);
         }
@@ -54,7 +61,7 @@ public class SawTriggers : MonoBehaviour
     }
 
     public void DisableBunchTriggers() {
-        if(bunchOfTriggers)
+        if(bunchOfTriggers && verticalSaw)
             bunchOfTriggers.SetActive(false);
     }
 

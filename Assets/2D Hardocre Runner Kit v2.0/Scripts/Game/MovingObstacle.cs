@@ -20,6 +20,7 @@ public class MovingObstacle : MonoBehaviour {
 	public List<UnityAction> disableRollTriggers = new List<UnityAction>();
 	public List<UnityAction> updateBunchTriggers = new List<UnityAction>();
 	public List<UnityAction> disableBunchTriggers = new List<UnityAction>();
+	public List<UnityAction> resetInitialState = new List<UnityAction>();
 
 	public float previousX;
 
@@ -104,7 +105,12 @@ public class MovingObstacle : MonoBehaviour {
 
 
 	void ResetTriggers() {
-		for (int i = 0; i < disableBunchTriggers.Count; i++)
+		for (int i = 0; i < resetInitialState.Count; i++)
+		{
+			resetInitialState[i]();
+		}
+
+			for (int i = 0; i < disableBunchTriggers.Count; i++)
 		{
 			disableBunchTriggers[i]();
 			disableRollTriggers[i]();
