@@ -16,7 +16,8 @@ public class MovingObstacle : MonoBehaviour {
 
 	public bool isVerticalSaw;
 
-	public List<UnityAction> updateSawTriggers = new List<UnityAction>();
+	public List<UnityAction> updateRollTriggers = new List<UnityAction>();
+	public List<UnityAction> disableRollTriggers = new List<UnityAction>();
 	public List<UnityAction> updateBunchTriggers = new List<UnityAction>();
 	public List<UnityAction> disableBunchTriggers = new List<UnityAction>();
 
@@ -52,19 +53,17 @@ public class MovingObstacle : MonoBehaviour {
 		if (isVerticalSaw) {
 			if (previousX != this.transform.position.x) {
 				previousX = this.transform.position.x;
-				for (int i = 0; i < disableBunchTriggers.Count; i++)
-				{
-					disableBunchTriggers[i]();
-				}
+
+				ResetTriggers();
 			}
 
 			if (!goingUp && moveDir.y > 0) goingUp = !goingUp;
 			else if ((goingUp && moveDir.y < 0))
 			{
 				goingUp = !goingUp;
-				for (int i = 0; i < updateSawTriggers.Count; i++)
+				for (int i = 0; i < updateRollTriggers.Count; i++)
 				{
-					updateSawTriggers[i]();
+					updateRollTriggers[i]();
 				}
 			}
 
@@ -75,7 +74,7 @@ public class MovingObstacle : MonoBehaviour {
 					updateBunchTriggers[i]();
 				}
 			}
-			else if (goingUp && this.transform.position.y > 1.5)
+			else if (goingUp && this.transform.position.y > 1)
 			{
 				for (int i = 0; i < disableBunchTriggers.Count; i++)
 				{
@@ -86,9 +85,9 @@ public class MovingObstacle : MonoBehaviour {
 		else if ((goingUp && moveDir.x > 0) || (!goingUp && moveDir.x < 0))
 		{
 			goingUp = !goingUp;
-			for (int i = 0; i < updateSawTriggers.Count; i++)
+			for (int i = 0; i < updateRollTriggers.Count; i++)
 			{
-				updateSawTriggers[i]();
+				updateRollTriggers[i]();
 			}
 		}
 
@@ -98,5 +97,33 @@ public class MovingObstacle : MonoBehaviour {
 			newRotationSpeed = -rotationSpeed;
 
 		transform.Rotate(Vector3.forward * newRotationSpeed * 100 * Time.deltaTime);
+	}
+
+
+
+
+
+	void ResetTriggers() {
+		for (int i = 0; i < disableBunchTriggers.Count; i++)
+		{
+			disableBunchTriggers[i]();
+			disableRollTriggers[i]();
+		}
+
+		if (!goingUp && moveDir.y < 0) {
+			if (this.transform.position.y < 1.5)
+			{
+				for (int i = 0; i < updateBunchTriggers.Count; i++)
+				{
+					updateBunchTriggers[i]();
+				}
+			}
+			else {
+				for (int i = 0; i < updateRollTriggers.Count; i++)
+				{
+					updateRollTriggers[i]();
+				}
+			}
+		}
 	}
 }

@@ -311,6 +311,12 @@ public class RunController : MonoBehaviour
 			{
 				holdRoll = true;
 			}
+
+			SawTriggers STScript = col.gameObject.GetComponent<SawTriggers>();
+
+			if (STScript && STScript.canDisableTriggers) {
+				STScript.DisableTriggers();
+			}
 		}
 	}
 

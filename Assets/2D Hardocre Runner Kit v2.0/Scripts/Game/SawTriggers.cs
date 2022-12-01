@@ -10,18 +10,21 @@ public class SawTriggers : MonoBehaviour
     public float xModifier;
     public float yModifier;
     public bool verticalSaw;
+    public bool canDisableTriggers;
 
     public bool ColliderActive;
-    bool bunchTriggersActive;
 
     public GameObject rollTrigger;
     public GameObject bunchOfTriggers;
+
+    public GameObject masterTrigger;
 
     private void Start()
     {
         FollowSaw();
         if (verticalSaw) {
-            movingObstacleScript.updateSawTriggers.Add(EnableRollTrigger);
+            movingObstacleScript.updateRollTriggers.Add(EnableRollTrigger);
+            movingObstacleScript.disableRollTriggers.Add(DisableRollTrigger);
             movingObstacleScript.updateBunchTriggers.Add(EnableBunchTriggers);
             movingObstacleScript.disableBunchTriggers.Add(DisableBunchTriggers);
         }
@@ -33,23 +36,26 @@ public class SawTriggers : MonoBehaviour
     }
 
     public void EnableRollTrigger() {
-        rollTrigger.SetActive(true);
+        if(rollTrigger)
+            rollTrigger.SetActive(true);
+    }
+
+    public void DisableRollTrigger() {
+        if (rollTrigger)
+            rollTrigger.SetActive(false);
     }
 
     public void EnableBunchTriggers() {
-        //if (!bunchTriggersActive) {
+        if (bunchOfTriggers) {
             rollTrigger.SetActive(false);
-        //    bunchTriggersActive = !bunchTriggersActive;
             bunchOfTriggers.SetActive(true);
-        //}
+        }
+        
     }
 
     public void DisableBunchTriggers() {
-        //if (bunchTriggersActive)
-        //{
-        //    bunchTriggersActive = !bunchTriggersActive;
+        if(bunchOfTriggers)
             bunchOfTriggers.SetActive(false);
-        //}
     }
 
     public void FollowSaw() {
@@ -58,5 +64,13 @@ public class SawTriggers : MonoBehaviour
         nextPosition.y += yModifier;
 
         this.transform.position = nextPosition;
+    }
+
+    public void DisableTriggers() {
+        Debug.Log("Disable Triggers");
+        SawTriggers masterTriggerScript = masterTrigger.GetComponent<SawTriggers>();
+        masterTriggerScript.verticalSaw = false;
+        masterTriggerScript.rollTrigger.SetActive(false);
+        masterTriggerScript.bunchOfTriggers.SetActive(false);
     }
 }
