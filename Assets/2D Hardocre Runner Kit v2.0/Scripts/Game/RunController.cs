@@ -306,21 +306,6 @@ public class RunController : MonoBehaviour
 				rollTriggered = true;
 				enteredActionTrigger = true;
 			}
-			else if (col.gameObject.CompareTag("VerticalSaw"))
-			{
-				Debug.Log("On est dans le vertical saw");
-				
-				observedSaw.sawGO = col.gameObject;
-				observedSaw.sawScript = col.gameObject.GetComponent<SawTriggers>();
-
-				float distanceX = observedSaw.sawGO.transform.position.x - gameObject.transform.position.x;
-				float distanceY = observedSaw.sawGO.transform.position.y - gameObject.transform.position.y;
-
-				Debug.Log("Distance X " + (distanceX));
-				Debug.Log("Distance Y " + (distanceY));
-				rollTriggered = true;
-			}
-
 
 			if (col.gameObject.CompareTag("HoldRoll"))
 			{

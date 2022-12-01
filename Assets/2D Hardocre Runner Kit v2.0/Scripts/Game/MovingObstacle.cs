@@ -17,15 +17,22 @@ public class MovingObstacle : MonoBehaviour {
 	public bool isVerticalSaw;
 
 	public List<UnityAction> updateSawTriggers = new List<UnityAction>();
+	public List<UnityAction> updateBunchTriggers = new List<UnityAction>();
+	public List<UnityAction> disableBunchTriggers = new List<UnityAction>();
+
+	public float previousX;
 
 	void Start () {
 		thisTransform = transform;
 		point = targetPoint-1;
 
 		if (point == 0) goingUp = true;
+
+		previousX = this.transform.position.x;
 	}
 
-	void FixedUpdate () 
+	//Why FixedUpdate and not Update?
+	void Update () 
 	{
 		if (point < wayPoint.Count && wayPoint.Count >= 1)
 		{
@@ -43,12 +50,36 @@ public class MovingObstacle : MonoBehaviour {
 		}
 
 		if (isVerticalSaw) {
-			if ((goingUp && moveDir.y < 0) || (!goingUp && moveDir.y > 0))
+			if (previousX != this.transform.position.x) {
+				previousX = this.transform.position.x;
+				for (int i = 0; i < disableBunchTriggers.Count; i++)
+				{
+					disableBunchTriggers[i]();
+				}
+			}
+
+			if (!goingUp && moveDir.y > 0) goingUp = !goingUp;
+			else if ((goingUp && moveDir.y < 0))
 			{
 				goingUp = !goingUp;
 				for (int i = 0; i < updateSawTriggers.Count; i++)
 				{
 					updateSawTriggers[i]();
+				}
+			}
+
+			if (!goingUp && this.transform.position.y < 1.5)
+			{
+				for (int i = 0; i < updateBunchTriggers.Count; i++)
+				{
+					updateBunchTriggers[i]();
+				}
+			}
+			else if (goingUp && this.transform.position.y > 1.5)
+			{
+				for (int i = 0; i < disableBunchTriggers.Count; i++)
+				{
+					disableBunchTriggers[i]();
 				}
 			}
 		}
