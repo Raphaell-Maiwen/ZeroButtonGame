@@ -43,8 +43,10 @@ public class SawTriggers : MonoBehaviour
     }
 
     public void EnableRollTrigger() {
-        if(rollTrigger && verticalSaw)
+        if (rollTrigger && verticalSaw) {
             rollTrigger.SetActive(true);
+            rollTrigger.transform.position = this.transform.position;
+        }
     }
 
     public void DisableRollTrigger() {
