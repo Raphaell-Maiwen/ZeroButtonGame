@@ -70,8 +70,8 @@ public class GameManager : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Left-click to jump."),
-			new TutorialStep(ActionDone.DoubleJump, "Left-click twice to double-jump."), new TutorialStep(ActionDone.Roll, "Right-click to roll.")};
+		//tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Left-click to jump."),
+		//	new TutorialStep(ActionDone.DoubleJump, "Left-click twice to double-jump."), new TutorialStep(ActionDone.Roll, "Right-click to roll.")};
 
 		if (completeTest) ObstaclesTest = ObstaclesTest2;
 
@@ -102,7 +102,8 @@ public class GameManager : MonoBehaviour
 		}
 
 		playerControls = Player.GetComponent<RunController>();
-		playerControls.ProgressTutorial = NextStepTutorial;
+		playerControls.enabled = false;
+		
 		
 		if(levelPart.GetComponent<Collider2D>() != null && levelPart.GetComponent<BoxCollider2D>() == null)
 		{
@@ -124,10 +125,22 @@ public class GameManager : MonoBehaviour
 
 
 		UI.restrartButton.onClick.AddListener(RestartLevel);
-		UI.exitButton.onClick.AddListener(ExitGame);
 		UI.menuButton.onClick.AddListener(GoToMenu);
+		UI.mobileButton.onClick.AddListener(activateMobileControls);
+		UI.pcButton.onClick.AddListener(activatePCControls);
+		
 
 		startHintColor = UI.startHintUI.color;
+	}
+
+	void InitiateSomeStuffAfterControlScheme() {
+		playerControls.enabled = true;
+		playerControls.ProgressTutorial = NextStepTutorial;
+		UI.mobileButton.gameObject.SetActive(false);
+		UI.pcButton.gameObject.SetActive(false);
+		UI.startHintUI.gameObject.SetActive(true);
+		UI.deviceOn.gameObject.SetActive(false);
+		UI.startHintUI.text = playerControls.isMobile ? "TAP TO START!" : "CLICK TO START!";
 	}
 
 	void Update () {
@@ -175,7 +188,6 @@ public class GameManager : MonoBehaviour
 			}
 			
 			UI.restrartButton.gameObject.SetActive(true);
-			UI.exitButton.gameObject.SetActive(true);
 			UI.menuButton.gameObject.SetActive(true);
 		}
 		else
@@ -183,7 +195,6 @@ public class GameManager : MonoBehaviour
 			UI.scoreUI.enabled = true;
 			UI.newRecordUI.enabled = false;
 			UI.restrartButton.gameObject.SetActive(false);
-			UI.exitButton.gameObject.SetActive(false);
 			UI.menuButton.gameObject.SetActive(false);
 		}
 
@@ -275,19 +286,26 @@ public class GameManager : MonoBehaviour
 		SaveCoins ();
 		StartCoroutine("Restart");
 	}
-	
-	void ExitGame()
-	{
-		PlaySound(UI.clickSound);
-		SaveCoins ();
-		Application.Quit();
-	}
 
 	void GoToMenu()
 	{
         PlaySound(UI.clickSound);
 		SaveCoins ();
 		Application.LoadLevel(0);
+	}
+
+	void activateMobileControls() {
+		playerControls.isMobile = true;
+		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Tap on the left side to jump."),
+			new TutorialStep(ActionDone.DoubleJump, "Tap twice to double-jump."), new TutorialStep(ActionDone.Roll, "Tap on the right side to roll.")};
+		InitiateSomeStuffAfterControlScheme();
+	}
+
+	void activatePCControls() {
+		playerControls.isMobile = false;
+		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Left-click to jump."),
+			new TutorialStep(ActionDone.DoubleJump, "Left-click twice to double-jump."), new TutorialStep(ActionDone.Roll, "Right-click to roll.")};
+		InitiateSomeStuffAfterControlScheme();
 	}
 
 
@@ -313,6 +331,7 @@ public class GameManager : MonoBehaviour
 	//Reload level function, we'll use it after level restart; 
 	private void ReloadLevel()
 	{
+		UI.scoreUI.gameObject.SetActive(true);
 		nextDistance = 0.0F;
 		for (int i = 0; i < level.Length; i++)
 		{
@@ -424,7 +443,7 @@ public class positions
 [System.Serializable]
 public class ui
 {
-	public Text scoreUI, newRecordUI, startHintUI, coinsUI, tutorialsText;
-	public Button restrartButton, exitButton, menuButton;
+	public Text scoreUI, newRecordUI, startHintUI, coinsUI, tutorialsText, deviceOn;
+	public Button restrartButton, menuButton, mobileButton, pcButton;
 	public AudioClip clickSound;
 }

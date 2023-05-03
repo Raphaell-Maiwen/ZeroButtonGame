@@ -63,6 +63,8 @@ public class RunController : MonoBehaviour
 
 	ObservedSaw observedSaw;
 
+	public bool isMobile = false;
+
 	void Start()
 	{
 		observedSaw = new ObservedSaw();
@@ -108,30 +110,39 @@ public class RunController : MonoBehaviour
 
 		//Platform depending controls;
 
-		//TODO: Stuff delay
-#if UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8
-
-		foreach (Touch touch in Input.touches)
+		if (isMobile)
 		{
-			if(controls == Controls.JUMP_AND_SLIDE)
+			foreach (Touch touch in Input.touches)
 			{
-				jump = touch.phase == TouchPhase.Began && touch.position.x < Screen.width/2;
-				roll = touch.phase == TouchPhase.Began && touch.position.x > Screen.width/2 && rollDuration == 0;
-			}
-			else
-				jump = touch.phase == TouchPhase.Began;
-		}
-#endif
+				jump = false;
 
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WEBPLAYER || UNITY_EDITOR
-		//TODO: Stuff delay
-		jump = false;
-		if (!jumpDisabledIsh || !lastInputComputer) {
-			jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
+				if (!jumpDisabledIsh || !lastInputComputer)
+				{
+					jump = touch.phase == TouchPhase.Began && touch.position.x < Screen.height / 2;
+				}
+
+				roll = touch.phase == TouchPhase.Began && touch.position.x > Screen.height / 2 && rollDuration == 0;
+			}
 		}
-			
-		roll = Input.GetMouseButtonDown(1) && rollDuration == 0;
-#endif
+		else {
+			jump = false;
+			if (!jumpDisabledIsh || !lastInputComputer)
+			{
+				jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
+			}
+
+			roll = Input.GetMouseButtonDown(1) && rollDuration == 0;
+		}
+
+/*#if UNITY_IOS || UNITY_ANDROID
+
+		
+#endif*/
+
+//#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WEBPLAYER || UNITY_EDITOR || UNITY_WP8
+		//TODO: Stuff delay
+		
+//#endif
 
 		speed = Mathf.Clamp(speed, minSpeed, maxSpeed);
 
