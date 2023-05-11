@@ -56,6 +56,9 @@ public class RunController : MonoBehaviour
 	public bool lastInputComputer;
 	public bool jumpDisabledIsh;
 
+	bool jumpMobile = false;
+	bool rollMobile = false;
+
 	public class ObservedSaw {
 		public GameObject sawGO = null;
 		public SawTriggers sawScript = null;
@@ -77,7 +80,8 @@ public class RunController : MonoBehaviour
 		else
 			play = false;
 
-		speed = minSpeed;
+		//speed = minSpeed;
+
 		gameObject.tag = "Player";
 		thisRigidbody = GetComponent<Rigidbody2D>();
 		thisRigidbody.gravityScale = gravity;
@@ -98,6 +102,8 @@ public class RunController : MonoBehaviour
 		mainCollider = GetComponent<BoxCollider2D>();
 		defaultolliderCenter = mainCollider.offset.y;
 		defaultColliderSize = mainCollider.size.y;
+
+		//jumpButton.onClick.AddListener(() => OnJumpButton());
 	}
 
 	void Update()
@@ -109,23 +115,26 @@ public class RunController : MonoBehaviour
 		}
 
 		//Platform depending controls;
+		jump = false;
 
 		if (isMobile)
 		{
-			foreach (Touch touch in Input.touches)
-			{
-				jump = false;
+			jump = jumpMobile;
+			jumpMobile = false;
 
+			roll = rollMobile;
+			rollMobile = false;
+			/*foreach (Touch touch in Input.touches)
+			{
 				if (!jumpDisabledIsh || !lastInputComputer)
 				{
-					jump = touch.phase == TouchPhase.Began && touch.position.x < Screen.height / 2;
+					jump = touch.phase == TouchPhase.Began && touch.position.x < Screen.width / 2;
 				}
 
-				roll = touch.phase == TouchPhase.Began && touch.position.x > Screen.height / 2 && rollDuration == 0;
-			}
+				roll = touch.phase == TouchPhase.Began && touch.position.x > Screen.width / 2 && rollDuration == 0;
+			}*/
 		}
 		else {
-			jump = false;
 			if (!jumpDisabledIsh || !lastInputComputer)
 			{
 				jump = Input.GetMouseButtonDown(0) && jumpCounter < maxJumpCount;
@@ -166,6 +175,8 @@ public class RunController : MonoBehaviour
 		if (!roll && rollDuration <= 0) roll = rollTriggered;
 		if (!roll) roll = holdRoll;
 
+		//if(rollDuration != 0) Debug.Log(rollDuration);
+
 		if (jump)
 		{
 			rollDuration = 0;
@@ -198,7 +209,9 @@ public class RunController : MonoBehaviour
 				GetComponent<AudioSource>().Play();
 			}
 			rollDuration = RollDuration;
+			//Debug.Log("Roll duration reset");
 			rollTriggered = false;
+			roll = false;
 			ProgressTutorial(GameManager.ActionDone.Roll);
 		}
 
@@ -213,7 +226,9 @@ public class RunController : MonoBehaviour
 
 				if (rollDuration > 0)
 				{
+					//Debug.Log("Roll Duration Before : " + rollDuration);
 					rollDuration -= 1 * Time.deltaTime;
+					//Debug.Log("Roll Duration After : " + rollDuration + " Delta: " + 1 * Time.deltaTime);
 					mainCollider.size = new Vector2(mainCollider.size.x, rollColliderSize);
 					mainCollider.offset = new Vector2(mainCollider.offset.x, rollColliderCenter);
 					moveSpeed = speed + RollSpeedDifference;
@@ -270,7 +285,13 @@ public class RunController : MonoBehaviour
 		}
 	}
 
+	public void OnJumpButton() {
+		jumpMobile = true;
+	}
 
+	public void OnRollButton() {
+		if (rollDuration == 0) rollMobile = true;
+	}
 
 	void OnCollisionEnter2D(Collision2D col)
 	{
@@ -287,7 +308,6 @@ public class RunController : MonoBehaviour
 			if (animator) animator.SetTrigger("Death");
 			if (deathSFX && sfxOn) { GetComponent<AudioSource>().clip = deathSFX; GetComponent<AudioSource>().Play(); }
 			gameOver = true;
-			Debug.Log("Death");
 		}
 		grounded = true;
 	}
@@ -351,7 +371,6 @@ public class RunController : MonoBehaviour
 
 		if (distanceX < 0 || !observedSaw.sawScript.ColliderActive)
 		{
-			Debug.Log("Bye saw");
 			observedSaw.sawGO.SetActive(false);
 			observedSaw.sawGO = null;
 		}
@@ -363,21 +382,15 @@ public class RunController : MonoBehaviour
 		//J'avais essayé à <0.75 et ça avait fail à 0.746363
 		else if (distanceY < 0.75f && distanceY > 0.286f) //(distanceX < 0.95f && distanceY < 0.5f && distanceY >0f && distanceX + distanceY > 1.2f)
 		{
-			Debug.Log("Saute");
 			jumpTriggered = true;
 			observedSaw.sawGO.SetActive(false);
-			Debug.Log("Distance X " + (distanceX));
-			Debug.Log("Distance Y " + (distanceY));
 		}
 		//Ca a marché à 0.751
 		//747989
 		else if (distanceY < 0.8f && distanceY > 0.25f)//(distanceX < 0.85f && distanceY < 1)
 		{
-			Debug.Log("Ca roule ma poule");
 			rollTriggered = true;
 			observedSaw.sawGO.SetActive(false);
-			Debug.Log("Distance X " + (distanceX));
-			Debug.Log("Distance Y " + (distanceY));
 		}
 
 	}

@@ -28,7 +28,6 @@ public class GoAwaySaw : MonoBehaviour
             sawInCollider = true;
             if (playerInCollider && sawScript.goingUp)
             {
-                Debug.Log("Let's goooo");
                 sawScript.goingUp = !sawScript.goingUp;
                 sawScript.point = 1;
             }
@@ -38,7 +37,6 @@ public class GoAwaySaw : MonoBehaviour
             playerInCollider = true;
             if (sawInCollider && sawScript.goingUp)
             {
-                Debug.Log("Let's goooo");
                 sawScript.goingUp = !sawScript.goingUp;
                 sawScript.point = 1;
             }

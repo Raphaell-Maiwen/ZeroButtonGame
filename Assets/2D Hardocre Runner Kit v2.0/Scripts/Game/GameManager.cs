@@ -47,6 +47,9 @@ public class GameManager : MonoBehaviour
 
 	public bool testWithoutTutorial;
 
+	public GameObject jumpButton;
+	public GameObject rollButton;
+
 	public enum ActionDone { 
 		Jump,
 		DoubleJump,
@@ -296,9 +299,15 @@ public class GameManager : MonoBehaviour
 
 	void activateMobileControls() {
 		playerControls.isMobile = true;
-		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Tap on the left side to jump."),
-			new TutorialStep(ActionDone.DoubleJump, "Tap twice to double-jump."), new TutorialStep(ActionDone.Roll, "Tap on the right side to roll.")};
+		tutorialSteps = new TutorialStep[] { new TutorialStep(ActionDone.Jump, "Tap the J button to jump"),
+			new TutorialStep(ActionDone.DoubleJump, "Press it twice to double-jump."), new TutorialStep(ActionDone.Roll, "Tap the R button to roll.")};
 		InitiateSomeStuffAfterControlScheme();
+
+		jumpButton.SetActive(true);
+		rollButton.SetActive(true);
+
+		jumpButton.GetComponent<Button>().onClick.AddListener(() => playerControls.OnJumpButton());
+		rollButton.GetComponent<Button>().onClick.AddListener(() => playerControls.OnRollButton());
 	}
 
 	void activatePCControls() {
